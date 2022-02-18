@@ -1,0 +1,45 @@
+{
+  "name": "code-library-server",
+  "version": "1.0.0",
+  "description": "The GraphQl API of the CODE University of Applied Sciences Library Management System",
+  "main": "dist/index",
+  "typings": "dist/index",
+  "scripts": {
+    "updatePerms": "npm uninstall code-library-perms && npm i --S https://github.com/LinusBolls/code-library-perms.git",
+    "prepare": "tsc",
+    "build": "tsc",
+    "start": "node dist",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LinusBolls/code-library-server.git/"
+  },
+  "author": "https://github.com/LinusBolls/",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LinusBolls/code-library-server/issues"
+  },
+  "homepage": "https://github.com/LinusBolls/code-library-server#readme",
+  "dependencies": {
+    "apollo-server": "^3.6.2",
+    "axios": "^0.25.0",
+    "chalk": "^4.1.2",
+    "code-library-perms": "github:LinusBolls/code-library-perms",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.2.0",
+    "zod": "^3.11.6"
+  },
+  "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/chalk": "^2.2.0",
+    "@types/cookie-parser": "^1.4.2",
+    "@types/cors": "^2.8.12",
+    "@types/dotenv": "^8.2.0",
+    "@types/jsonwebtoken": "^8.5.8",
+    "@types/mongoose": "^5.11.97"
+  }
+}
