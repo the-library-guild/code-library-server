@@ -10,6 +10,8 @@ dist/
 node_modules/
 .env
 
+.swc/
+
 .vscode/
 .DS_STORE
 package-lock.json
