@@ -34,6 +34,7 @@ async function main() {
   await migrateDb();
 
   const server = new ApolloServer({
+    introspection: process.env.NODE_ENV === "production",
     typeDefs,
     resolvers,
     context: authMiddleware,

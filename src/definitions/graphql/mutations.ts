@@ -2,7 +2,7 @@ import { gql } from "apollo-server";
 
 export default gql`
   type Mutation {
-    "[MANAGE_BOOKS || RENT_BOOKS]"
+    "[MANAGE_BOOKS || RENT_BOOKS || RENT_UNLIMITED_BOOKS]"
     rentBook(bookId: ID!): Boolean
     "[MANAGE_BOOKS || be current owner of book]"
     returnBook(bookId: ID!): Boolean
