@@ -20,7 +20,8 @@ const mintJwt = async (
   if (!JwtZod.safeParse(userData)) throw new Error("Invalid Userdata");
 
   const nowInSeconds = Math.floor(Date.now() / 1000);
-  const exp = nowInSeconds + env.MAX_SESSION_DURATION_SECONDS;
+  const exp =
+    nowInSeconds + parseInt(env.MAX_SESSION_DURATION_SECONDS as string);
 
   const user = await User.findOne({ email: userData.email });
 

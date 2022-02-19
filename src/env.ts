@@ -19,6 +19,17 @@ function loadEnvFile() {
     JWT_SECRET: parsed.JWT_SECRET,
   };
 }
-const env = process.env.NODE_ENV === "production" ? process.env : loadEnvFile();
+function parseIntValues(sache: { [key: string]: string | number }) {
+  for (const [key, value] of Object.entries(sache)) {
+    const canBeNumber = !isNaN(value as any);
+    if (canBeNumber) sache[key] = parseInt(value as string);
+  }
+  return sache;
+}
+
+const env =
+  process.env.NODE_ENV === "production"
+    ? parseIntValues(process.env)
+    : loadEnvFile();
 
 export default env;
