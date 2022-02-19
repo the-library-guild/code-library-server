@@ -21,12 +21,8 @@ const mintJwt = async (
 
   const nowInSeconds = Math.floor(Date.now() / 1000);
 
-  console.log("before:", typeof env.MAX_SESSION_DURATION_SECONDS);
-
   const exp =
     nowInSeconds + parseInt(env.MAX_SESSION_DURATION_SECONDS as string);
-
-  console.log("after");
 
   const user = await User.findOne({ email: userData.email });
 
