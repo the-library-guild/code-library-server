@@ -8,6 +8,8 @@ import { JwtZod } from "../definitions/zod";
 import { Item } from "../definitions/mongoose";
 import env from "../env";
 
+import { User } from "../definitions/mongoose";
+
 const toDoc = (i: any) => i?._doc;
 
 const mintJwt = async (
@@ -18,14 +20,19 @@ const mintJwt = async (
   if (!JwtZod.safeParse(userData)) throw new Error("Invalid Userdata");
 
   const nowInSeconds = Math.floor(Date.now() / 1000);
-  const expiryDate = nowInSeconds + env.MAX_SESSION_DURATION_SECONDS;
+  const exp = nowInSeconds + env.MAX_SESSION_DURATION_SECONDS;
+
+  const user = await User.findOne({ email: userData.email });
+
+  const permsInt = user?.permsInt || DEFAULT_USER_PERMS_INT;
+  const bookingLimit = user?.bookingLimit || env.DEFAULT_USER_BOOKING_LIMIT;
 
   return jwt.sign(
     {
       ...userData,
-      permsInt: DEFAULT_USER_PERMS_INT,
-      bookingLimit: env.DEFAULT_USER_BOOKING_LIMIT,
-      exp: expiryDate,
+      permsInt,
+      bookingLimit,
+      exp,
     },
     secret
   );
@@ -43,17 +50,27 @@ const getBook = async (
   { bookId }: { bookId: ObjectId },
   { user }: any
 ) => {
-  if (!hasPerms(user, Perm.VIEW_BOOKS))
+  if (!hasPerms(user?.permsInt, Perm.VIEW_BOOKS))
     throw new Error("Missing Permission: VIEW_BOOKS");
 
   return toDoc(await Item.findOne({ tags: { $in: ["media"] }, _id: bookId }));
+};
+const getUser = async (
+  _: any,
+  { userId }: { userId: ObjectId },
+  { user }: any
+) => {
+  if (!hasPerms(user?.permsInt, Perm.VIEW_USERS))
+    throw new Error("Missing Permission: VIEW_USERS");
+
+  return toDoc(await User.findOne({ _id: userId }));
 };
 const getSimilarBooks = async (
   _: any,
   { bookId }: { bookId: ObjectId },
   { user }: any
 ) => {
-  if (!hasPerms(user, Perm.VIEW_BOOKS))
+  if (!hasPerms(user?.permsInt, Perm.VIEW_BOOKS))
     throw new Error("Missing Permission: VIEW_BOOKS");
 
   const book = toDoc(
@@ -70,7 +87,7 @@ const getSimilarBooks = async (
   });
   return similarBooks.map(toDoc);
 };
-export default { mintJwt, getAllBooks, getBook, getSimilarBooks };
+export default { mintJwt, getAllBooks, getUser, getBook, getSimilarBooks };
 
 // async function getBorrowedItems(user: Person & Document) {
 //   const res = await Item.find({

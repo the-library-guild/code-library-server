@@ -8,11 +8,17 @@ services:
       - 4000:4000
     volumes:
       - ./:/code
+    networks:
+      - my-network 
+    depends_on:
+      - mongo
   mongo:
     image: mongo
-    ports:
-      - 27017:27017
-    volumes:
-      - mongodb:/data/db
-volumes:
-  mongodb:
+    # volumes:
+    #   - mongodb:/data/db
+    networks:
+      - my-network 
+
+networks:
+  my-network:
+    driver: bridge

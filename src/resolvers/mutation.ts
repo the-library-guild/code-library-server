@@ -1,12 +1,28 @@
-// const borrowBook = async (_: any, { bookId }: any, { user }: any) => {
-//   const { permsInt, _id } = user;
+import { Perm, hasPerms } from "code-library-perms";
 
-//   const perms = parsePerms(permsInt);
-//   const isNormalBooking = perms.includes(BORROW_BOOKS);
-//   const isAdminBooking = perms.includes(ADMIN_BOOKS);
-//   const isUnAuthorized = !isNormalBooking && !isAdminBooking;
-//   if (isUnAuthorized) return;
-// };
-// const returnBook = async (_: any, { bookId }: any, { user }: any) => {};
+import { Item, User } from "../definitions/mongoose";
 
-export default {};
+const rentBook = async (_: any, { bookId }: any, { user }: any) => {
+  const { permsInt, _id } = user;
+
+  const isAuthorized =
+    (user.rentingLimit > user.children.length &&
+      hasPerms(permsInt, Perm.RENT_BOOKS)) ||
+    hasPerms(permsInt, Perm.RENT_UNLIMITED_BOOKS);
+
+  if (isAuthorized) throw new Error("Missing Authorization");
+
+  const book = await Item.updateOne(
+    { _id: bookId },
+    { $push: { "rentable.ownershipStateTags": "Rented" } }
+  );
+};
+const returnBook = async (_: any, { bookId }: any, { user }: any) => {};
+
+export default { rentBook, returnBook };
+
+// const isAvailable = book.rentable.ownershipTags.includes("Available");
+// const isBorrowedByUser = user.children.includes(book._id);
+
+// const canBeRented = userCanRent && isAvailable;
+// const canBeReturned = isBorrowedByUser;

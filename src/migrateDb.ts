@@ -1,7 +1,7 @@
 import { ObjectId, Document } from "mongoose";
 import axios from "axios";
 
-import { Item } from "./definitions/mongoose";
+import { Item, User } from "./definitions/mongoose";
 import { Book, Container } from "./definitions/types";
 import { papaParse } from "./papaParse";
 
@@ -30,6 +30,11 @@ function toBookObj(parentId: ObjectId | undefined) {
     return book;
   };
 }
+const admin = {
+  email: "linus.bolls@code.berlin",
+  permsInt: 127,
+  bookingLimit: 10,
+};
 const shelf: Container = {
   name: "CODE Library Book Shelf",
   tags: ["shelf", "library", "physical"],
@@ -70,6 +75,7 @@ async function migrateDb() {
   const bookDocs = await Item.create(books);
   const bookIds = bookDocs.map((i: Document) => i._id);
 
+  await User.create(admin);
   await Item.updateOne({ _id: shelfId }, { children: bookIds });
 }
 export { migrateDb };
