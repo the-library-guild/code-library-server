@@ -12,11 +12,10 @@ import authMiddleware from "./authMiddleware";
 import env from "./env";
 
 const app = express();
-const allowedDomains = [env.CLIENT_URL, "https://studio.apollographql.com"];
 
 const corsOptions = {
   credentials: true,
-  origin: allowedDomains,
+  origin: env.ALLOWED_ORIGINS,
 };
 app.use(cors(corsOptions));
 app.use(cookieParser());
@@ -34,21 +33,25 @@ async function main() {
   await migrateDb();
 
   const server = new ApolloServer({
-    introspection: process.env.NODE_ENV === "production",
+    introspection: env.IS_PROD,
     typeDefs,
     resolvers,
     context: authMiddleware,
   });
-  logGraphQl("Starting Server");
-
   await server.start();
-
-  logGraphQl("Applying Express Middleware");
 
   server.applyMiddleware({ app });
 
-  app.listen(env.PORT, () =>
-    logGraphQl(`Listening on http://localhost:${env.PORT}/`)
-  );
+  app.listen(env.PORT, () => {
+    const envMode = process.env.NODE_ENV || "development";
+
+    const capitalizedEnvMode =
+      envMode.charAt(0).toUpperCase() + envMode.slice(1);
+
+    logGraphQl(
+      `Listening on http://localhost:${env.PORT}/ in ${capitalizedEnvMode} Mode`
+    );
+    logGraphQl(`Accepting Requests from ${env.ALLOWED_ORIGINS.join(", ")}`);
+  });
 }
 main().catch((err) => console.error("[Server] Error Occured:", err));

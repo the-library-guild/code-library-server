@@ -21,8 +21,7 @@ const mintJwt = async (
 
   const nowInSeconds = Math.floor(Date.now() / 1000);
 
-  const exp =
-    nowInSeconds + parseInt(env.MAX_SESSION_DURATION_SECONDS as string);
+  const exp = nowInSeconds + env.MAX_SESSION_DURATION_SECONDS;
 
   const user = await User.findOne({ email: userData.email });
 

@@ -1,35 +1,42 @@
 import { config } from "dotenv";
+/*
+exports type parsed environment variables (i.e. PORT: "420" becomes PORT: 420) for linting and auto completion purposes.
+in staging and prod, these are sourced from process.env (injected via heroku), in development from the local .env file
+*/
+function getEnvSrc() {
+  if (process.env.NODE_ENV === "production") return process.env;
 
-const { error, parsed } = config();
+  const { error, parsed } = config();
 
-function loadEnvFile() {
   if (error || parsed == null) throw error;
 
+  return parsed;
+}
+function parseEnv(env: { [key: string]: string }) {
   return {
-    MONGO_CONNECTION_STRING: parsed.MONGO_CONNECTION_STRING,
+    IS_PROD: env.NODE_ENV === "production",
+    PORT: parseInt(env.PORT),
+    ALLOWED_ORIGINS: JSON.parse(env.ALLOWED_ORIGINS),
 
-    GOOGLE_ID: parsed.GOOGLE_ID,
-    GOOGLE_SECRET: parsed.GOOGLE_SECRET,
+    MONGO_CONNECTION_STRING: env.MONGO_CONNECTION_STRING,
+    JWT_SECRET: env.JWT_SECRET,
 
-    CLIENT_URL: parsed.CLIENT_URL,
-    PORT: parseInt(parsed.PORT),
+    GOOGLE_ID: env.GOOGLE_ID,
+    GOOGLE_SECRET: env.GOOGLE_SECRET,
 
-    MAX_SESSION_DURATION_SECONDS: parseInt(parsed.MAX_SESSION_DURATION_SECONDS),
-    DEFAULT_USER_BOOKING_LIMIT: parseInt(parsed.DEFAULT_USER_BOOKING_LIMIT),
-    JWT_SECRET: parsed.JWT_SECRET,
+    MAX_SESSION_DURATION_SECONDS: parseInt(env.MAX_SESSION_DURATION_SECONDS),
+    DEFAULT_USER_BOOKING_LIMIT: parseInt(env.DEFAULT_USER_BOOKING_LIMIT),
   };
 }
-function parseIntValues(sache: { [key: string]: string | number }) {
-  for (const [key, value] of Object.entries(sache)) {
-    const canBeNumber = !isNaN(value as any);
-    if (canBeNumber) sache[key] = parseInt(value as string);
-  }
-  return sache;
+function validateEnv(env: { [key: string]: any }) {
+  const keysWithValueNull = Object.entries(env)
+    .filter(([key, value]) => value == null)
+    .map(([key, value]) => key);
+
+  if (keysWithValueNull.length)
+    throw new Error(
+      "Missing Environment Variables: " + JSON.stringify(keysWithValueNull)
+    );
+  return env;
 }
-
-const env =
-  process.env.NODE_ENV === "production"
-    ? parseIntValues(process.env)
-    : loadEnvFile();
-
-export default env;
+export default validateEnv(parseEnv(getEnvSrc()));

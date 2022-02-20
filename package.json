@@ -5,12 +5,13 @@
   "main": "dist/index",
   "typings": "dist/index",
   "scripts": {
+    "dockerBuild": "docker-compose build",
+    "dockerStart": "docker-compose up",
     "updatePerms": "npm uninstall code-library-perms && npm i --S https://github.com/LinusBolls/code-library-perms.git",
     "prepare": "npx swc src -d dist",
     "build": "npx swc src -d dist",
     "start": "node dist",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dockerBuild": "docker build "
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",

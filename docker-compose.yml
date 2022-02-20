@@ -14,11 +14,13 @@ services:
       - mongo
   mongo:
     image: mongo
-    # volumes:
-    #   - mongodb:/data/db
+    volumes:
+      - mongo-store:/data/db
     networks:
       - my-network 
 
 networks:
   my-network:
     driver: bridge
+volumes:
+  mongo-store:
