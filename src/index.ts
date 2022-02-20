@@ -11,12 +11,18 @@ import { migrateDb } from "./migrateDb";
 import authMiddleware from "./authMiddleware";
 import env from "./env";
 
+import router from "./pages/api/auth/[...nextauth]";
+
 const app = express();
 
 const corsOptions = {
   credentials: true,
   origin: env.ALLOWED_ORIGINS,
 };
+app.get("/api/auth", async (req: any, res: any, next: any) =>
+  // console.log(await router(req, res))
+  router(req, res)
+);
 app.use(cors(corsOptions));
 app.use(cookieParser());
 
