@@ -7,7 +7,7 @@ services:
     ports:
       - 4000:4000
     volumes:
-      - ./:/code
+      - ./:/app
     networks:
       - my-network 
     depends_on:
