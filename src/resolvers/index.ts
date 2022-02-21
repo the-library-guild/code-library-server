@@ -1,4 +1,4 @@
-import Query from "./query";
-import Mutation from "./mutation";
+import Query from "./query/index";
+import Mutation from "./mutation/index";
 
 export default { Query, Mutation };

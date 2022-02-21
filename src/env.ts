@@ -1,4 +1,6 @@
 import { config } from "dotenv";
+
+import { EnvZod } from "./definitions/zod";
 /*
 exports type parsed environment variables (i.e. PORT: "420" becomes PORT: 420) for linting and auto completion purposes.
 in staging and prod, these are sourced from process.env (injected via heroku), in development from the local .env file
@@ -29,14 +31,14 @@ function parseEnv(env: { [key: string]: string }) {
   };
 }
 function validateEnv(env: { [key: string]: any }) {
-  const keysWithValueNull = Object.entries(env)
-    .filter(([key, value]) => value == null)
-    .map(([key, value]) => key);
+  const parsedEnv = EnvZod.safeParse(env);
 
-  if (keysWithValueNull.length)
+  if (!parsedEnv.success)
     throw new Error(
-      "Missing Environment Variables: " + JSON.stringify(keysWithValueNull)
+      "Failed to Parse Environment Variables: " +
+        JSON.stringify((parsedEnv as any).error.issues, null, 2)
     );
-  return env;
+
+  return parsedEnv.data;
 }
 export default validateEnv(parseEnv(getEnvSrc()));

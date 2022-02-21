@@ -33,10 +33,10 @@ async function main() {
   await migrateDb();
 
   const server = new ApolloServer({
-    introspection: env.IS_PROD,
+    introspection: !env.IS_PROD,
     typeDefs,
     resolvers,
-    context: authMiddleware,
+    context: authMiddleware(),
   });
   await server.start();
 

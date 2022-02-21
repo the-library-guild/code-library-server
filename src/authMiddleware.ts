@@ -15,21 +15,23 @@ function setHeaders({ req, res }: Props) {
   if (env.ALLOWED_ORIGINS.includes(req.headers.origin))
     res.header("Access-Control-Allow-Origin", req.headers.origin);
 }
-const authMiddleware = async ({ req, res }: Props) => {
-  setHeaders({ req, res });
+const authMiddleware =
+  (testUser: any = {}) =>
+  async ({ req, res }: Props) => {
+    setHeaders({ req, res });
 
-  const cookieName = env.IS_PROD
-    ? "__Secure-next-auth.session-token"
-    : "next-auth.session-token";
+    const cookieName = env.IS_PROD
+      ? "__Secure-next-auth.session-token"
+      : "next-auth.session-token";
 
-  try {
-    const token = req.cookies[cookieName];
+    try {
+      const token = req.cookies[cookieName];
 
-    const user: any = jwt.verify(token, env.JWT_SECRET);
+      const user: any = testUser || jwt.verify(token, env.JWT_SECRET);
 
-    return { req, res, user };
-  } catch (err) {
-    return { req, res, user: null };
-  }
-};
+      return { req, res, user };
+    } catch (err) {
+      return { req, res, user: null };
+    }
+  };
 export default authMiddleware;

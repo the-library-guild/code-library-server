@@ -2,10 +2,15 @@ import { gql } from "apollo-server";
 
 export default gql`
   scalar Date
+  scalar Data
   "a mongoose Document"
   interface Document {
     "mongoose ObjectId"
     _id: ID!
+  }
+  type Response {
+    ok: Boolean!
+    data: Data
   }
   "base properties of every Document in Collection 'Item'"
   input Jwt {
@@ -22,6 +27,15 @@ export default gql`
   }
   "a hardcover book, pdf, movie, youtube video, ..."
   type Media {
+    contentTags: [String!]!
+    contentDesc: String
+    subTitle: String
+    creators: [String!]!
+    publisher: String
+    language: String
+    publishedDate: Date
+  }
+  input MediaData {
     contentTags: [String!]!
     contentDesc: String
     subTitle: String
@@ -53,6 +67,13 @@ export default gql`
     media: Media!
     rentable: Rentable!
   }
+  input BookData {
+    tags: [String]
+    name: String
+    desc: String
+
+    media: MediaData
+  }
   type User implements Item & Document {
     _id: ID!
     tags: [String!]!
@@ -62,5 +83,11 @@ export default gql`
     children: [ID!]!
 
     childrenObjects: [Book!]!
+  }
+  input UserData {
+    email: String
+    tags: [String!]
+    name: String
+    desc: String
   }
 `;
