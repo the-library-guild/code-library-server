@@ -4,7 +4,7 @@ on: [push]
 
 env:
   SERVICE_NAME: code-library-api
-  IMAGE_NAME: gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.SERVICE_NAME }}
+  IMAGE_NAME: gcr.io/${{ secrets.GCP_PROJECT_ID }}/$SERVICE_NAME
 
 jobs:
   build-container:
