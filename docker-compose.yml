@@ -3,7 +3,9 @@ version: '3'
 services:
   node:
     restart: always
-    build: .
+    build:
+      context: .
+      target: development
     ports:
       - 4000:4000
     volumes:
