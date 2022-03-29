@@ -7,7 +7,7 @@ env:
   IMAGE_NAME: gcr.io/${{ secrets.GCP_PROJECT_ID }}/code-library-api
 
 jobs:
-  build-container:
+  build:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
@@ -28,7 +28,7 @@ jobs:
           docker build --tag $IMAGE_NAME:latest .
           docker push $IMAGE_NAME:${{ github.sha }}
           docker push $IMAGE_NAME:latest
-  test-run:
+  deploy:
     needs: build-container
     runs-on: ubuntu-20.04
     steps:
