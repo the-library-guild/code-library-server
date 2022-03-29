@@ -44,5 +44,6 @@ jobs:
           service: ${{ env.SERVICE_NAME }}
           image: ${{ env.IMAGE_NAME }}:${{ github.sha }}
           region: europe-west3
+          flags: --allow-unauthenticated
       - name: Test Deployment
         run: curl "${{ steps.deploy-run.outputs.url }}"
