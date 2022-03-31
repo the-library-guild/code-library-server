@@ -6,6 +6,20 @@ import { Item } from "../../definitions/mongoose";
 
 const toDoc = (i: any) => i?._doc;
 
+const getShelf = async (_: any, __: any, { user }: any) => {
+  requirePerms(user?.permsInt, Perm.VIEW_BOOKS);
+
+  const res = await Item.findOne({ tags: { $in: ["shelf"] } });
+
+  return toDoc(res);
+};
+const getReturnBox = async (_: any, __: any, { user }: any) => {
+  requirePerms(user?.permsInt, Perm.VIEW_BOOKS);
+
+  const res = await Item.findOne({ tags: { $in: ["returnBox"] } });
+
+  return toDoc(res);
+};
 const getBook = async (
   _: any,
   { bookId }: { bookId: ObjectId },
@@ -45,4 +59,10 @@ const getSimilarBooks = async (
   });
   return res.map(toDoc);
 };
-export default { getBook, getAllBooks, getSimilarBooks };
+export default {
+  getShelf,
+  getReturnBox,
+  getBook,
+  getAllBooks,
+  getSimilarBooks,
+};

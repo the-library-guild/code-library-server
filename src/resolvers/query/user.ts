@@ -18,7 +18,7 @@ const getUser = async (
   return toDoc(res);
 };
 const getAllUsers = async (_: any, __: any, { user }: any) => {
-  requirePerms(user?.permsInt, Perm.VIEW_USERS);
+  // requirePerms(user?.permsInt, Perm.VIEW_USERS);
 
   const res = await User.find();
 

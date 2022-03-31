@@ -13,6 +13,14 @@ import env from "./env";
 
 const app = express();
 
+process.env.NODE_ENV = "test";
+
+const testUser = {
+  name: "Linus Bolls",
+  email: "linus.bolls@code.berlin",
+  permsInt: 127,
+  rentingLimit: 10,
+};
 const corsOptions = {
   credentials: true,
   origin: env.ALLOWED_ORIGINS,
@@ -26,17 +34,20 @@ const logMongoDb = (arg: any) =>
 const logGraphQl = (arg: any) =>
   console.info(chalk.magenta(`[Server][GraphQl] ${arg}`));
 
-async function main() {
+async function startMongo() {
   logMongoDb("Connecting to " + env.MONGO_CONNECTION_STRING);
 
   await connect(env.MONGO_CONNECTION_STRING);
   await migrateDb();
+}
+async function main() {
+  startMongo();
 
   const server = new ApolloServer({
     introspection: !env.IS_PROD,
     typeDefs,
     resolvers,
-    context: authMiddleware(),
+    context: authMiddleware(process.env.NODE_ENV === "test" && testUser),
   });
   await server.start();
 
@@ -49,7 +60,7 @@ async function main() {
       envMode.charAt(0).toUpperCase() + envMode.slice(1);
 
     logGraphQl(
-      `Listening on http://localhost:${env.PORT}/ in ${capitalizedEnvMode} Mode`
+      `Listening on http://localhost:${env.PORT}/graphql/ in ${capitalizedEnvMode} Mode`
     );
     logGraphQl(`Accepting Requests from ${env.ALLOWED_ORIGINS.join(", ")}`);
   });
