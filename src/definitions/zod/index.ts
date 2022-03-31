@@ -19,8 +19,8 @@ const DocumentZod = z.object({
   _id: z.instanceof(Schema.Types.ObjectId),
 });
 const ItemZod = z.object({
-  parent: z.instanceof(Schema.Types.ObjectId).optional(),
-  children: z.array(z.instanceof(Schema.Types.ObjectId)),
+  parentId: z.instanceof(Schema.Types.ObjectId).optional(),
+  childrenIds: z.array(z.instanceof(Schema.Types.ObjectId)),
   tags: z.array(z.string()),
   name: z.string().nonempty(),
   desc: z.string().optional(),
@@ -28,14 +28,14 @@ const ItemZod = z.object({
 const MediaZod = z.object({
   contentTags: z.array(z.string()),
   contentDesc: z.string().optional(),
-  subTitle: z.string().optional(),
+  tagline: z.string().optional(),
   creators: z.array(z.string()),
   publisher: z.string().optional(),
   language: z.string().optional(),
   publishedDate: z.date().optional(),
 });
 const RentableZod = z.object({
-  ownershipStateTags: z.array(z.string()),
+  stateTags: z.array(z.string()),
   borrowedDate: z.date().optional(),
   dueDate: z.date().optional(),
 });

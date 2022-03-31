@@ -2,12 +2,16 @@ import { gql } from "apollo-server";
 
 export default gql`
   type Query {
+    "[VIEW_BOOKS]"
+    getShelf: Item
+    "[VIEW_BOOKS]"
+    getReturnBox: Item
     "[VIEW_BOOKS] get a single media item by mongoose ObjectId"
-    getBook(bookId: ID!): Book
+    getBook(bookId: ID!): Item
     "[VIEW_BOOKS] get all media items in the database"
-    getAllBooks: [Book!]!
+    getAllBooks: [Item!]!
     "[VIEW_BOOKS] get all media items whos media.contentTags intersect with the media.contentTags of the item"
-    getSimilarBooks(bookId: ID!): [Book!]!
+    getSimilarBooks(bookId: ID!): [Item!]!
 
     "[VIEW_USERS] get a single user by mongoose ObjectId"
     getUser(userId: ID!): User

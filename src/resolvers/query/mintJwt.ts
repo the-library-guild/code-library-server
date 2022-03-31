@@ -19,16 +19,22 @@ const mintJwt = async (
 
   const exp = nowInSeconds + env.MAX_SESSION_DURATION_SECONDS;
 
-  const user = await User.findOne({ email: userData.email });
+  let user = await User.findOne({ email: userData.email });
 
-  const permsInt = user?.permsInt || DEFAULT_USER_PERMS_INT;
-  const bookingLimit = user?.bookingLimit || env.DEFAULT_USER_BOOKING_LIMIT;
-
+  if (!user) {
+    user = {
+      ...userData,
+      permsInt: DEFAULT_USER_PERMS_INT,
+      bookingLimit: env.DEFAULT_USER_BOOKING_LIMIT,
+    };
+    console.info(
+      `[Server][MongoDb] Creating User: ${JSON.stringify(userData)}`
+    );
+    await User.create(user);
+  }
   return jwt.sign(
     {
-      ...userData,
-      permsInt,
-      bookingLimit,
+      ...user,
       exp,
     },
     secret

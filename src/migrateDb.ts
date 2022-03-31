@@ -9,36 +9,39 @@ function toBookObj(parentId: ObjectId | undefined) {
   return function (props: string[]) {
     const book: Book = {
       tags: ["book", "borrowable", "physical", "media"],
-      parent: parentId,
-      children: [],
+      parentId,
+      childrenIds: [],
       name: props[3],
       desc: props[7],
 
       media: {
         contentTags: [props[0], props[1], props[2], props[8], props[11]],
         contentDesc: props[12],
-        subTitle: props[4],
+        tagline: props[4],
         creators: [props[5]],
         publisher: props[6],
         language: props[10],
         publishedDate: props[9] === "" ? undefined : new Date(props[9]),
       },
       rentable: {
-        ownershipStateTags: [props[13]],
+        stateTags: [props[13]],
       },
     };
     return book;
   };
 }
 const admin = {
+  tags: [],
+  name: "Linus Bolls",
+  childrenIds: [],
   email: "linus.bolls@code.berlin",
   permsInt: 127,
-  bookingLimit: 10,
+  rentingLimit: 10,
 };
 const shelf: Container = {
   name: "CODE Library Book Shelf",
-  tags: ["shelf", "library", "physical"],
-  children: [],
+  tags: ["shelf", "container", "physical"],
+  childrenIds: [],
   desc: "Official CODE Library Shelf™ in Space, students can borrow books under https://placeholder.site/",
   physical: {
     coords: null,
@@ -48,8 +51,8 @@ const shelf: Container = {
 };
 const returnBox: Container = {
   name: "CODE Library Return Box",
-  tags: ["box", "library", "physical"],
-  children: [],
+  tags: ["returnBox", "container", "physical"],
+  childrenIds: [],
   desc: "Official CODE Library Return Box™ in Space, students can borrow books under https://placeholder.site/",
   physical: {
     coords: null,
@@ -59,6 +62,7 @@ const returnBox: Container = {
 };
 async function migrateDb() {
   await Item.deleteMany({});
+  await User.deleteMany({});
 
   const [shelfDoc, returnBoxDoc] = await Item.create([shelf, returnBox]);
   const shelfId = shelfDoc._id;
