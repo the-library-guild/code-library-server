@@ -1,24 +1,44 @@
 import { config } from "dotenv";
 
-const { error, parsed } = config();
+import { EnvZod } from "./definitions/zod";
+/*
+exports type parsed environment variables (i.e. PORT: "420" becomes PORT: 420) for linting and auto completion purposes.
+in staging and prod, these are sourced from process.env (injected via heroku), in development from the local .env file
+*/
+function getEnvSrc() {
+  if (process.env.NODE_ENV === "production") return process.env;
 
-function loadEnvFile() {
+  const { error, parsed } = config();
+
   if (error || parsed == null) throw error;
 
+  return parsed;
+}
+function parseEnv(env: { [key: string]: string }) {
   return {
-    MONGO_CONNECTION_STRING: parsed.MONGO_CONNECTION_STRING,
+    IS_PROD: env.NODE_ENV === "production",
+    PORT: parseInt(env.PORT),
+    ALLOWED_ORIGINS: JSON.parse(env.ALLOWED_ORIGINS),
 
-    GOOGLE_ID: parsed.GOOGLE_ID,
-    GOOGLE_SECRET: parsed.GOOGLE_SECRET,
+    MONGO_CONNECTION_STRING: env.MONGO_CONNECTION_STRING,
+    JWT_SECRET: env.JWT_SECRET,
 
-    CLIENT_URL: parsed.CLIENT_URL,
-    PORT: parseInt(parsed.PORT),
+    GOOGLE_ID: env.GOOGLE_ID,
+    GOOGLE_SECRET: env.GOOGLE_SECRET,
 
-    MAX_SESSION_DURATION_SECONDS: parseInt(parsed.MAX_SESSION_DURATION_SECONDS),
-    DEFAULT_USER_BOOKING_LIMIT: parseInt(parsed.DEFAULT_USER_BOOKING_LIMIT),
-    JWT_SECRET: parsed.JWT_SECRET,
+    MAX_SESSION_DURATION_SECONDS: parseInt(env.MAX_SESSION_DURATION_SECONDS),
+    DEFAULT_USER_BOOKING_LIMIT: parseInt(env.DEFAULT_USER_BOOKING_LIMIT),
   };
 }
-const env = process.env.NODE_ENV === "production" ? process.env : loadEnvFile();
+function validateEnv(env: { [key: string]: any }) {
+  const parsedEnv = EnvZod.safeParse(env);
 
-export default env;
+  if (!parsedEnv.success)
+    throw new Error(
+      "Failed to Parse Environment Variables: " +
+        JSON.stringify((parsedEnv as any).error.issues, null, 2)
+    );
+
+  return parsedEnv.data;
+}
+export default validateEnv(parseEnv(getEnvSrc()));

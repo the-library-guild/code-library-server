@@ -9,24 +9,29 @@ interface Props {
 }
 function setHeaders({ req, res }: Props) {
   /*
-  response headers should theoretically get handled with the corsOptions in index.ts,
+  response headers should theoretically get handled by the corsOptions in index.ts,
   but for some reason the cors middleware only gets applied on preflight requests
   */
-  const allowedDomains = [env.CLIENT_URL, "https://studio.apollographql.com"];
-
-  if (allowedDomains.includes(req.headers.origin || ""))
+  if (env.ALLOWED_ORIGINS.includes(req.headers.origin))
     res.header("Access-Control-Allow-Origin", req.headers.origin);
 }
-const authMiddleware = async ({ req, res }: Props) => {
-  setHeaders({ req, res });
+const authMiddleware =
+  (testUser: any = {}) =>
+  async ({ req, res }: Props) => {
+    setHeaders({ req, res });
 
-  try {
-    const token = req.cookies["next-auth.session-token"];
-    const user: any = jwt.verify(token, env.JWT_SECRET);
+    const cookieName = env.IS_PROD
+      ? "__Secure-next-auth.session-token"
+      : "next-auth.session-token";
 
-    return { req, res, user };
-  } catch (err) {
-    return { req, res, user: null };
-  }
-};
+    try {
+      const token = req.cookies[cookieName];
+
+      const user: any = testUser || jwt.verify(token, env.JWT_SECRET);
+
+      return { req, res, user };
+    } catch (err) {
+      return { req, res, user: null };
+    }
+  };
 export default authMiddleware;

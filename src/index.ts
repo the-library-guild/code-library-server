@@ -12,11 +12,18 @@ import authMiddleware from "./authMiddleware";
 import env from "./env";
 
 const app = express();
-const allowedDomains = [env.CLIENT_URL, "https://studio.apollographql.com"];
 
+process.env.NODE_ENV = "test";
+
+const testUser = {
+  name: "Linus Bolls",
+  email: "linus.bolls@code.berlin",
+  permsInt: 127,
+  rentingLimit: 10,
+};
 const corsOptions = {
   credentials: true,
-  origin: allowedDomains,
+  origin: env.ALLOWED_ORIGINS,
 };
 app.use(cors(corsOptions));
 app.use(cookieParser());
@@ -27,28 +34,35 @@ const logMongoDb = (arg: any) =>
 const logGraphQl = (arg: any) =>
   console.info(chalk.magenta(`[Server][GraphQl] ${arg}`));
 
-async function main() {
+async function startMongo() {
   logMongoDb("Connecting to " + env.MONGO_CONNECTION_STRING);
 
   await connect(env.MONGO_CONNECTION_STRING);
   await migrateDb();
+}
+async function main() {
+  startMongo();
 
   const server = new ApolloServer({
-    introspection: process.env.NODE_ENV === "production",
+    introspection: !env.IS_PROD,
     typeDefs,
     resolvers,
-    context: authMiddleware,
+    context: authMiddleware(process.env.NODE_ENV === "test" && testUser),
   });
-  logGraphQl("Starting Server");
-
   await server.start();
-
-  logGraphQl("Applying Express Middleware");
 
   server.applyMiddleware({ app });
 
-  app.listen(env.PORT, () =>
-    logGraphQl(`Listening on http://localhost:${env.PORT}/`)
-  );
+  app.listen(env.PORT, () => {
+    const envMode = process.env.NODE_ENV || "development";
+
+    const capitalizedEnvMode =
+      envMode.charAt(0).toUpperCase() + envMode.slice(1);
+
+    logGraphQl(
+      `Listening on http://localhost:${env.PORT}/graphql/ in ${capitalizedEnvMode} Mode`
+    );
+    logGraphQl(`Accepting Requests from ${env.ALLOWED_ORIGINS.join(", ")}`);
+  });
 }
 main().catch((err) => console.error("[Server] Error Occured:", err));

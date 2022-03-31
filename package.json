@@ -5,12 +5,13 @@
   "main": "dist/index",
   "typings": "dist/index",
   "scripts": {
+    "dockerBuild": "docker-compose build",
+    "dockerStart": "docker-compose up",
     "updatePerms": "npm uninstall code-library-perms && npm i --S https://github.com/LinusBolls/code-library-perms.git",
     "prepare": "npx swc src -d dist",
     "build": "npx swc src -d dist",
     "start": "node dist",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dockerBuild": "docker build "
+    "test": "npx jest"
   },
   "repository": {
     "type": "git",
@@ -41,7 +42,10 @@
     "@swc/core": "^1.2.141",
     "@types/cookie-parser": "^1.4.2",
     "@types/cors": "^2.8.12",
-    "@types/jsonwebtoken": "^8.5.8"
+    "@types/jest": "^27.4.1",
+    "@types/jsonwebtoken": "^8.5.8",
+    "jest": "^27.5.1",
+    "ts-jest": "^27.1.3"
   },
   "engines": {
     "node": "16.x"
