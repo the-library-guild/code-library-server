@@ -36,6 +36,8 @@ const getAllBooks = async (_: any, __: any, { user }: any) => {
 
   const res = await Item.find({ tags: { $in: ["media"] } });
 
+  console.log(res.map(toDoc));
+
   return res.map(toDoc);
 };
 const getSimilarBooks = async (

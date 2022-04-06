@@ -10,6 +10,7 @@
     "updatePerms": "npm uninstall code-library-perms && npm i --S https://github.com/LinusBolls/code-library-perms.git",
     "prepare": "npx swc src -d dist",
     "build": "npx swc src -d dist",
+    "prestart": "npx swc src -d dist",
     "start": "node dist",
     "test": "npx jest"
   },

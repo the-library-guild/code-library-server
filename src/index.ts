@@ -13,8 +13,6 @@ import env from "./env";
 
 const app = express();
 
-process.env.NODE_ENV = "test";
-
 const testUser = {
   name: "Linus Bolls",
   email: "linus.bolls@code.berlin",
