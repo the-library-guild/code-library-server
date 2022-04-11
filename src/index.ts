@@ -4,7 +4,7 @@ import express from "express";
 import chalk from "chalk";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import session from "express-session";
+import session from "cookie-session";
 
 import typeDefs from "./definitions/graphql";
 import resolvers from "./resolvers";
