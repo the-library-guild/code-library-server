@@ -27,6 +27,9 @@ const authMiddleware =
     try {
       const token = req.cookies[cookieName];
 
+      console.log("cookies", JSON.stringify(req.cookies, null, 2));
+      console.log("token", token);
+
       const user: any = testUser || jwt.verify(token, env.JWT_SECRET);
 
       return { req, res, user };
