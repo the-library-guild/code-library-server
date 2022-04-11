@@ -16,7 +16,7 @@ function setHeaders({ req, res }: Props) {
     res.header("Access-Control-Allow-Origin", req.headers.origin);
 }
 const authMiddleware =
-  (testUser: any = {}) =>
+  (testUser: any = null) =>
   async ({ req, res }: Props) => {
     setHeaders({ req, res });
 
