@@ -3,7 +3,6 @@ import { ApolloError } from "apollo-server-express";
 import { Perm } from "code-library-perms";
 
 import { Item, User } from "../../definitions/mongoose";
-import env from "../../env";
 import { handleErrs, requirePerms } from "../util";
 
 const anyoneCanReturnBooks = true;
@@ -61,11 +60,11 @@ const rentBook = async (_: any, { bookId }: any, { user }: any) =>
     // TODO: create user if does not exist
     const userDoc = await User.findOne({ email: user.email });
 
-    if (
-      !bookDoc ||
-      !userDoc ||
-      !bookDoc.rentable.stateTags.includes("Available")
-    )
+    if (!userDoc) {
+      throw new ApolloError("We could not find your registration.", "Error");
+    }
+
+    if (!bookDoc || !bookDoc.rentable.stateTags.includes("Available"))
       throw new ApolloError(
         "This book does not exist or is not available right now",
         "Error"
