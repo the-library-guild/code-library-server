@@ -6,14 +6,13 @@ exports type parsed environment variables (i.e. PORT: "420" becomes PORT: 420) f
 in staging and prod, these are sourced from process.env (injected via heroku), in development from the local .env file
 */
 function getEnvSrc() {
-  if (process.env.NODE_ENV === "production") return process.env;
-
   const { error, parsed } = config();
 
-  if (error || parsed == null) throw error;
+  if (error || parsed == null) return process.env;
 
   return parsed;
 }
+
 function parseEnv(env: { [key: string]: string }) {
   return {
     IS_PROD: env.NODE_ENV === "production",
