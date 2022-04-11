@@ -34,7 +34,8 @@ function requirePerms(userPermsInt: number, requiredPermsInt: number) {
   if (!hasPerms(userPermsInt, requiredPermsInt))
     throw new ApolloError(
       `Missing Permission: ${keyByValue(Perm, requiredPermsInt)}`,
-      "MissingPermissionsError"
+      "MissingPermissionsError",
+      { requiredPermsInt }
     );
 }
 export { handleErrs, requirePerms };
