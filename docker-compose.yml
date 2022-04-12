@@ -15,15 +15,17 @@ services:
     volumes:
       - ./:/app
     networks:
-      - my-network 
+      - my-network
     depends_on:
       - mongo
   mongo:
     image: mongo
+    ports:
+      - 27017:27017
     volumes:
       - mongo-store:/data/db
     networks:
-      - my-network 
+      - my-network
 
 networks:
   my-network:
