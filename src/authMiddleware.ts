@@ -20,12 +20,8 @@ const authMiddleware =
   async ({ req, res }: Props) => {
     setHeaders({ req, res });
 
-    const cookieName = env.IS_PROD
-      ? "__Secure-next-auth.session-token"
-      : "next-auth.session-token";
-
     try {
-      let token = req.cookies[cookieName];
+      let token: string;
 
       const tokenFromHeader = req.headers.authorization;
 
