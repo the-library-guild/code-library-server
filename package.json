@@ -30,7 +30,6 @@
     "chalk": "^4.1.2",
     "code-library-perms": "github:LinusBolls/code-library-perms",
     "cookie-parser": "^1.4.6",
-    "cookie-session": "^2.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "jsonwebtoken": "^8.5.1",

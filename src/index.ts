@@ -4,7 +4,6 @@ import express from "express";
 import chalk from "chalk";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import session from "cookie-session";
 
 import typeDefs from "./definitions/graphql";
 import resolvers from "./resolvers";
@@ -13,20 +12,6 @@ import authMiddleware from "./authMiddleware";
 import env from "./env";
 
 const app = express();
-
-app.set("trust proxy", 1);
-
-app.use(
-  session({
-    secret: process.env.JWT_SECRET,
-    resave: true,
-    saveUninitialized: false,
-    cookie: {
-      sameSite: "none",
-      secure: true,
-    },
-  })
-);
 
 const testUser = {
   name: "Linus Bolls",
