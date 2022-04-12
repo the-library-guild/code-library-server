@@ -25,15 +25,19 @@ const authMiddleware =
       : "next-auth.session-token";
 
     try {
-      const token = req.cookies[cookieName];
+      let token = req.cookies[cookieName];
 
-      console.log("cookies", JSON.stringify(req.cookies, null, 2));
-      console.log("token", token);
+      const tokenFromHeader = req.headers.authorization;
+
+      if (tokenFromHeader) {
+        token = tokenFromHeader.replace("Bearer ", "");
+      }
 
       const user: any = testUser || jwt.verify(token, env.JWT_SECRET);
 
       return { req, res, user };
     } catch (err) {
+      console.error("Error", err);
       return { req, res, user: null };
     }
   };
