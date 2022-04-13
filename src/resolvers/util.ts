@@ -38,4 +38,9 @@ function requirePerms(userPermsInt: number, requiredPermsInt: number) {
       { requiredPermsInt }
     );
 }
-export { handleErrs, requirePerms };
+function isLoggedInUser(targetUserEmail: string, loggedInUserEmail: string) {
+  if (targetUserEmail != loggedInUserEmail) {
+    throw new ApolloError(`You can only access your own books.`, "Error");
+  }
+}
+export { handleErrs, requirePerms, isLoggedInUser };

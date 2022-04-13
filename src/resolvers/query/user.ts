@@ -3,17 +3,14 @@ import { ObjectId } from "mongoose";
 import { Perm, requirePerms } from "code-library-perms";
 
 import { User } from "../../definitions/mongoose";
+import { isLoggedInUser } from "../util";
 
 const toDoc = (i: any) => i?._doc;
 
-const getUser = async (
-  _: any,
-  { userId }: { userId: ObjectId },
-  { user }: any
-) => {
-  requirePerms(user?.permsInt, Perm.VIEW_USERS);
+const getUser = async (_: any, { email }: { email: string }, { user }: any) => {
+  isLoggedInUser(email, user?.email);
 
-  const res = await User.findOne({ _id: userId });
+  const res = await User.findOne({ email });
 
   return toDoc(res);
 };

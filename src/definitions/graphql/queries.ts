@@ -14,7 +14,7 @@ export default gql`
     getSimilarBooks(bookId: ID!): [Item!]!
 
     "[VIEW_USERS] get a single user by mongoose ObjectId"
-    getUser(userId: ID!): User
+    getUser(email: String!): User
     "[VIEW_USERS] get all documents in collection User"
     getAllUsers: [User!]!
     "[VIEW_USERS] get all users who have rented one or multiple books"
