@@ -4,8 +4,6 @@ import axios from "axios";
 import { Item, User } from "./definitions/mongoose";
 import { Book, Container } from "./definitions/types";
 import { papaParse } from "./papaParse";
-import item from "./resolvers/item";
-import { gql } from "apollo-server";
 
 function toBookObj(parentId: ObjectId | undefined) {
   return function (props: string[]) {
@@ -74,11 +72,9 @@ async function migrateDb() {
 
   const res = await axios.get(URL);
   const { data: csvString } = res;
-  const { errors, data } = (await papaParse(csvString)) as any;
+  const { data } = (await papaParse(csvString)) as any;
 
-  console.log(data);
-
-  const books = data.slice(1, 2).map(toBookObj(shelfId));
+  const books = data.slice(1).map(toBookObj(shelfId));
 
   const bookDocs = await Item.create(books);
   const bookIds = bookDocs.map((i: Document) => i._id);
