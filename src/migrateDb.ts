@@ -70,13 +70,15 @@ async function migrateDb() {
   const shelfId = shelfDoc._id;
 
   const URL =
-    "https://docs.google.com/spreadsheets/d/e/2PACX-1vTJs4FKl_eqyLBaWA3WqiP88BbaVNl2rGl-wezGg_ARdinZfkeGG0ZuG-u0dK0vj5xsGJuQ_cQS_eXT/pub?output=csv";
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vTJs4FKl_eqyLBaWA3WqiP88BbaVNl2rGl-wezGg_ARdinZfkeGG0ZuG-u0dK0vj5xsGJuQ_cQS_eXT/pub?gid=0&single=true&output=csv";
 
   const res = await axios.get(URL);
   const { data: csvString } = res;
   const { errors, data } = (await papaParse(csvString)) as any;
 
-  const books = data.slice(1).map(toBookObj(shelfId));
+  console.log(data);
+
+  const books = data.slice(1, 2).map(toBookObj(shelfId));
 
   const bookDocs = await Item.create(books);
   const bookIds = bookDocs.map((i: Document) => i._id);
