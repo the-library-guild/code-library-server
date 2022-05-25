@@ -2,6 +2,9 @@ import { gql } from "apollo-server";
 
 export default gql`
   type Query {
+
+    "[VIEW_BOOKS]"
+    geBookByQr(qrId: !ID): Item
     "[VIEW_BOOKS]"
     getShelf: Item
     "[VIEW_BOOKS]"

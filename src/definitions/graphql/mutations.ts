@@ -42,5 +42,8 @@ export default gql`
 
     "[CHANGE_PERMISSIONS]"
     changeUserPermissions(userId: ID!, newPermsInt: Int): Res
+
+
+    linkQr(qrId: !ID, mediaId: !ID): Res
   }
 `;

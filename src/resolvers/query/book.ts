@@ -2,9 +2,22 @@ import { ObjectId } from "mongoose";
 
 import { Perm, requirePerms } from "code-library-perms";
 
-import { Item } from "../../definitions/mongoose";
+import { Item, Qr } from "../../definitions/mongoose";
 
 const toDoc = (i: any) => i?._doc;
+
+const getBookByQr = async (_: any, { qrId }: any, { user }: any) => {
+  requirePerms(user?.permsInt, Perm.VIEW_BOOKS);
+
+  const qrDoc = await Qr.findOne({
+    qrId,
+  });
+  if (!qrDoc) return null;
+
+  const bookDoc = await Item.findOne({ id: qrDoc.mediaId });
+
+  return bookDoc;
+};
 
 const getShelf = async (_: any, __: any, { user }: any) => {
   requirePerms(user?.permsInt, Perm.VIEW_BOOKS);
