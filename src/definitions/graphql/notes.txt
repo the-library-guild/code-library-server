@@ -1,0 +1,9 @@
+api endpoint for adding new book
+
+might have to run docker-compose down first
+
+start docker desktop app (https://www.docker.com/products/docker-desktop/)
+move into code-library-client
+docker-compose up
+
+(cant run in firefox)

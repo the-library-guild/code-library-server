@@ -2,12 +2,25 @@ import { ApolloError } from "apollo-server-express";
 
 import { Perm } from "code-library-perms";
 
-import { Item, User } from "../../definitions/mongoose";
+import { Item, User, Qr } from "../../definitions/mongoose";
 import { handleErrs, requirePerms } from "../util";
 
 const anyoneCanReturnBooks = true;
 
 const remove = (entryToRemove: any) => (i: any) => i !== entryToRemove;
+
+const linkQr = async (_: any, { qrId, mediaId }: any, { user }: any) =>
+  handleErrs(async () => {
+    requirePerms(user?.permsInt, Perm.MANAGE_BOOKS);
+
+    const qrDoc = await Qr.create({
+      qrId,
+      mediaId,
+    });
+    if (!qrDoc) throw new ApolloError("Failed to create item", "Error");
+
+    return { __typename: "Success", id: qrId };
+  });
 
 const createBook = async (_: any, { bookData }: any, { user }: any) =>
   handleErrs(async () => {
@@ -22,8 +35,8 @@ const createBook = async (_: any, { bookData }: any, { user }: any) =>
         stateTags: ["Available"],
       },
       tags: ["book", "rentable", "media"],
+      desc: "",
     });
-
     if (!bookDoc) throw new ApolloError("Failed to create item", "Error");
 
     await Item.updateOne(
@@ -62,6 +75,8 @@ const deleteBook = async (_: any, { bookId }: any, { user }: any) =>
 
 const rentBook = async (_: any, { bookId }: any, { user }: any) =>
   handleErrs(async () => {
+    console.log("user inside rentBook resolver:", user);
+
     requirePerms(user?.permsInt, Perm.RENT_BOOKS);
 
     const bookDoc = await Item.findOne({ _id: bookId });
@@ -167,4 +182,5 @@ export default {
   returnBook,
   processBook,
   updateBookStatus,
+  linkQr,
 };

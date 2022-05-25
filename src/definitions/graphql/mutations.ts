@@ -17,6 +17,8 @@ export default gql`
   type Mutation {
     "[MANAGE_BOOKS]"
     createBook(bookData: BookData): PermProtectedRes
+
+    creaetQr(qrId: Int!, bookId: ID!): Res
     "[MANAGE_BOOKS]"
     updateBook(bookId: ID!, bookData: BookData): PermProtectedRes
     "[MANAGE_BOOKS]"

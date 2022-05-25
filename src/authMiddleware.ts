@@ -29,10 +29,15 @@ const authMiddleware =
         token = tokenFromHeader.replace("Bearer ", "");
       }
 
+      console.log({ token, cookies: req.cookies });
+
       const user: any = testUser || jwt.verify(token, env.JWT_SECRET);
+
+      console.log("user inside middleware:", user);
 
       return { req, res, user };
     } catch (err) {
+      console.log("caught error:", err);
       return { req, res, user: null };
     }
   };

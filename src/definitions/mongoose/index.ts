@@ -16,11 +16,17 @@ const itemSache = {
 const userSache = {
   childrenIds: [String],
 };
+const qrSache = {
+  qrId: Number,
+  mediaId: String,
+};
 
 const itemSchema = new Schema(itemSache, schemaOptions);
 const userSchema = new Schema(userSache, schemaOptions);
+const qrSchema = new Schema(qrSache);
 
 const Item = model("Item", itemSchema);
 const User = model("User", userSchema);
+const Qr = model("Qr", qrSchema);
 
-export { Item, User };
+export { Item, User, Qr };

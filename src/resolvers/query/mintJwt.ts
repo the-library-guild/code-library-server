@@ -32,6 +32,7 @@ const mintJwt = async (
     );
     await User.create(user);
   }
+  console.log(user);
   return jwt.sign(
     {
       ...user,
