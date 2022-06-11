@@ -13,8 +13,11 @@ const createBook = async (_: any, { bookData }: any, { user }: any) =>
   handleErrs(async () => {
     requirePerms(user?.permsInt, Perm.MANAGE_BOOKS);
 
+    const shelf = await Item.findOne({ tags: { $in: ["shelf"] } });
+
     const bookDoc = await Item.create({
       ...bookData,
+      parentId: shelf._id,
       rentable: {
         stateTags: ["Available"],
       },
@@ -22,6 +25,11 @@ const createBook = async (_: any, { bookData }: any, { user }: any) =>
     });
 
     if (!bookDoc) throw new ApolloError("Failed to create item", "Error");
+
+    await Item.updateOne(
+      { _id: shelf._id },
+      { children: [...shelf.children, bookDoc._id] }
+    );
 
     return { __typename: "Success", id: bookDoc._id };
   });
