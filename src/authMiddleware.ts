@@ -33,7 +33,6 @@ const authMiddleware =
 
       return { req, res, user };
     } catch (err) {
-      console.error("Error", err);
       return { req, res, user: null };
     }
   };
