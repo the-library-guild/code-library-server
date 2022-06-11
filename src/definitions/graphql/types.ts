@@ -57,6 +57,7 @@ export default gql`
     contentTags: [String!]
     contentDesc: String
     subTitle: String
+    tagline: String
     creators: [String!]
     publisher: String
     language: String
