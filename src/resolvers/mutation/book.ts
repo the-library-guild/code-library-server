@@ -3,6 +3,7 @@ import { ApolloError } from "apollo-server-express";
 import { Perm } from "code-library-perms";
 
 import { Item, User, Qr } from "../../definitions/mongoose";
+import { createNewUser } from "../../user.helpers";
 import { handleErrs, requirePerms } from "../util";
 
 const anyoneCanReturnBooks = true;
@@ -11,12 +12,24 @@ const remove = (entryToRemove: any) => (i: any) => i !== entryToRemove;
 
 const linkQr = async (_: any, { qrId, mediaId }: any, { user }: any) =>
   handleErrs(async () => {
-    requirePerms(user?.permsInt, Perm.MANAGE_BOOKS);
+    requirePerms(user?.permsInt, Perm.RENT_BOOKS);
+
+    const alreadyTakenQrCode = await Qr.findOne({
+      qrId,
+    });
+
+    if (alreadyTakenQrCode) {
+      throw new ApolloError(
+        `QR code [ ${alreadyTakenQrCode.qrId}] already linked to book [${alreadyTakenQrCode.mediaId}]`,
+        "Error"
+      );
+    }
 
     const qrDoc = await Qr.create({
       qrId,
       mediaId,
     });
+
     if (!qrDoc) throw new ApolloError("Failed to create item", "Error");
 
     return { __typename: "Success", id: qrId };
@@ -75,16 +88,13 @@ const deleteBook = async (_: any, { bookId }: any, { user }: any) =>
 
 const rentBook = async (_: any, { bookId }: any, { user }: any) =>
   handleErrs(async () => {
-    console.log("user inside rentBook resolver:", user);
-
     requirePerms(user?.permsInt, Perm.RENT_BOOKS);
 
     const bookDoc = await Item.findOne({ _id: bookId });
-    // TODO: create user if does not exist
-    const userDoc = await User.findOne({ email: user.email });
 
+    let userDoc = await User.findOne({ email: user.email });
     if (!userDoc) {
-      throw new ApolloError("We could not find your registration.", "Error");
+      userDoc = await createNewUser(user);
     }
 
     if (!bookDoc || !bookDoc.rentable.stateTags.includes("Available"))

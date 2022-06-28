@@ -17,8 +17,6 @@ export default gql`
   type Mutation {
     "[MANAGE_BOOKS]"
     createBook(bookData: BookData): PermProtectedRes
-
-    creaetQr(qrId: Int!, bookId: ID!): Res
     "[MANAGE_BOOKS]"
     updateBook(bookId: ID!, bookData: BookData): PermProtectedRes
     "[MANAGE_BOOKS]"
@@ -43,6 +41,6 @@ export default gql`
     "[CHANGE_PERMISSIONS]"
     changeUserPermissions(userId: ID!, newPermsInt: Int): Res
 
-    linkQr(qrId: ID!, mediaId: ID!): Res
+    linkQr(qrId: ID!, mediaId: ID!): PermProtectedRes
   }
 `;

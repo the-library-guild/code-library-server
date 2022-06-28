@@ -10,19 +10,20 @@ async function handleErrs(func: any) {
   } catch (err) {
     const { message: msg, extensions } = err;
 
-    if (extensions == null)
+    if (extensions == null) {
       console.error(`[Server][GraphQl] An Unexpected Error Occured: ${err}`);
+
+      return {
+        __typename: "Error",
+        msg: "An Unexpected Error Occured. Please Post this Message along with a Description of What you were trying to do at https://github.com/LinusBolls/code-library-server/issues/",
+      };
+    }
 
     const { code, ...rest } = extensions;
 
     console.error(`[Server][GraphQl][${code}] ${msg}`);
 
-    return code
-      ? { __typename: code, msg, ...rest }
-      : {
-          __typename: "Error",
-          msg: "An Unexpected Error Occured. Please Post this Message along with a Description of What you were trying to do at https://github.com/LinusBolls/code-library-server/issues/",
-        };
+    return { __typename: code, msg, ...rest };
   }
 }
 const keyByValue = (obj: { [key: string]: any }, value: any) =>

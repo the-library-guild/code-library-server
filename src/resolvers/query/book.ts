@@ -14,7 +14,7 @@ const getBookByQr = async (_: any, { qrId }: any, { user }: any) => {
   });
   if (!qrDoc) return null;
 
-  const bookDoc = await Item.findOne({ id: qrDoc.mediaId });
+  const bookDoc = await Item.findOne({ _id: qrDoc.mediaId });
 
   return bookDoc;
 };
@@ -78,4 +78,5 @@ export default {
   getBook,
   getAllBooks,
   getSimilarBooks,
+  getBookByQr,
 };
