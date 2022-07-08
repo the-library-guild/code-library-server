@@ -1,11 +1,8 @@
 import jwt from "jsonwebtoken";
+import userController from "../../controllers/user.controller";
 
-import type { Jwt } from "../../definitions/types";
 import { JwtZod } from "../../definitions/zod";
 import env from "../../env";
-
-import { User } from "../../definitions/mongoose";
-import { createNewUser } from "../../user.helpers";
 
 type UserInfo = {
   name: string;
@@ -23,11 +20,10 @@ const mintJwt = async (
 
   const exp = nowInSeconds + env.MAX_SESSION_DURATION_SECONDS;
 
-  let user = await User.findOne({ email: userData.email });
+  const user =
+    (await userController.get(userData.email)) ??
+    (await userController.create(userData));
 
-  if (!user) {
-    user = await createNewUser(userData);
-  }
   return jwt.sign(
     {
       ...user,

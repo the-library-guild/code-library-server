@@ -1,34 +1,22 @@
-import { ObjectId } from "mongoose";
-
 import { Perm, requirePerms } from "code-library-perms";
 
-import { User } from "../../definitions/mongoose";
+import userController from "../../controllers/user.controller";
 import { isLoggedInUser } from "../util";
-
-const toDoc = (i: any) => i?._doc;
 
 const getUser = async (_: any, { email }: { email: string }, { user }: any) => {
   isLoggedInUser(email, user?.email);
 
-  const res = await User.findOne({ email });
-
-  return toDoc(res);
+  return await userController.get(email);
 };
 const getAllUsers = async (_: any, __: any, { user }: any) => {
   // requirePerms(user?.permsInt, Perm.VIEW_USERS);
 
-  const res = await User.find();
-
-  return res.map(toDoc);
+  return await userController.getAll();
 };
 const getRentingUsers = async (_: any, __: any, { user }: any) => {
   requirePerms(user?.permsInt, Perm.VIEW_USERS);
 
-  const res = await User.find({
-    children: { $exists: true, $not: { $size: 0 } },
-  });
-
-  return res.map(toDoc);
+  return await userController.getRenting();
 };
 // async function getBorrowedItems(user: Person & Document) {
 //   const res = await Item.find({

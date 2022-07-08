@@ -13,11 +13,21 @@ function getEnvSrc() {
   return parsed;
 }
 
+const hardcodedAdmins = [
+  "marcelo.teixeira@code.berlin",
+  "linus.bolls@code.berlin",
+
+  "alex.maurer@code.berlin",
+  "lida.masouleh@code.berlin",
+  "alexander.gerick@code.berlin",
+  "maya.alroy@code.berlin",
+];
+
 function parseEnv(env: { [key: string]: string }) {
   return {
     IS_PROD: env.NODE_ENV === "production",
     PORT: parseInt(env.PORT),
-    ALLOWED_ORIGINS: JSON.parse(env.ALLOWED_ORIGINS),
+    ALLOWED_ORIGINS: JSON.parse(env.ALLOWED_ORIGINS ?? "[]"),
 
     MONGO_CONNECTION_STRING: env.MONGO_CONNECTION_STRING,
     JWT_SECRET: env.JWT_SECRET,
@@ -27,6 +37,12 @@ function parseEnv(env: { [key: string]: string }) {
 
     MAX_SESSION_DURATION_SECONDS: parseInt(env.MAX_SESSION_DURATION_SECONDS),
     DEFAULT_USER_BOOKING_LIMIT: parseInt(env.DEFAULT_USER_BOOKING_LIMIT),
+
+    // TODO: pull from env:
+    // ADMINS: JSON.parse(env.ADMIN_EMAILS ?? "[]"),
+    ADMIN_EMAILS: hardcodedAdmins,
+    ANYONE_CAN_RETURN_ANYONES_BOOKS: true,
+    MAX_RENTING_DURATION_DAYS: 14,
   };
 }
 function validateEnv(env: { [key: string]: any }) {

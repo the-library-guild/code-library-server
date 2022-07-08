@@ -1,15 +1,8 @@
-import { Item } from "../definitions/mongoose";
+import itemController from "../controllers/item.controller";
 
-const toDoc = (i: any) => i?._doc;
+const children = async (parent: any) =>
+  await itemController.getChildren(parent);
 
-const getChildren = async (parent: any) => {
-  const res = await Item.find({ _id: { $in: parent.children } });
+const parent = async (child: any) => await itemController.getParent(child);
 
-  return res.map(toDoc);
-};
-const getParent = async (parent: any) => {
-  if (!parent?.parentId) return null;
-
-  return toDoc(await Item.findOne({ _id: parent.parentId }));
-};
-export default { children: getChildren, parent: getParent };
+export default { children, parent };

@@ -14,6 +14,10 @@ const EnvZod = z.object({
   GOOGLE_SECRET: z.string().nonempty(),
   MAX_SESSION_DURATION_SECONDS: z.number().positive(),
   DEFAULT_USER_BOOKING_LIMIT: z.number().positive(),
+
+  ADMIN_EMAILS: z.array(z.string().email()),
+  ANYONE_CAN_RETURN_ANYONES_BOOKS: z.boolean(),
+  MAX_RENTING_DURATION_DAYS: z.number().positive(),
 });
 const DocumentZod = z.object({
   _id: z.instanceof(Schema.Types.ObjectId),

@@ -1,76 +1,58 @@
-import { ObjectId } from "mongoose";
-
 import { Perm, requirePerms } from "code-library-perms";
 
-import { Item, Qr } from "../../definitions/mongoose";
-
-const toDoc = (i: any) => i?._doc;
+import itemController from "../../controllers/item.controller";
+import qrController from "../../controllers/qr.controller";
 
 const getBookByQr = async (_: any, { qrId }: any, { user }: any) => {
   requirePerms(user?.permsInt, Perm.VIEW_BOOKS);
 
-  const qrDoc = await Qr.findOne({
-    qrId,
-  });
-  if (!qrDoc) return null;
+  const doc = await qrController.getLinkedItem(qrId);
 
-  const bookDoc = await Item.findOne({ _id: qrDoc.mediaId });
-
-  return bookDoc;
+  return doc;
 };
 
 const getShelf = async (_: any, __: any, { user }: any) => {
   requirePerms(user?.permsInt, Perm.VIEW_BOOKS);
 
-  const res = await Item.findOne({ tags: { $in: ["shelf"] } });
+  const doc = await itemController.getShelf();
 
-  return toDoc(res);
+  return doc;
 };
 const getReturnBox = async (_: any, __: any, { user }: any) => {
   requirePerms(user?.permsInt, Perm.VIEW_BOOKS);
 
-  const res = await Item.findOne({ tags: { $in: ["returnBox"] } });
+  const doc = await itemController.getReturnBox();
 
-  return toDoc(res);
+  return doc;
 };
 const getBook = async (
   _: any,
-  { bookId }: { bookId: ObjectId },
+  { bookId }: { bookId: string },
   { user }: any
 ) => {
   requirePerms(user?.permsInt, Perm.VIEW_BOOKS);
 
-  const res = await Item.findOne({ tags: { $in: ["media"] }, _id: bookId });
+  const doc = await itemController.get(bookId);
 
-  return toDoc(res);
+  return doc;
 };
 const getAllBooks = async (_: any, __: any, { user }: any) => {
   requirePerms(user?.permsInt, Perm.VIEW_BOOKS);
 
-  const res = await Item.find({ tags: { $in: ["media"] } });
+  const docs = await itemController.getBooks();
 
-  return res.map(toDoc);
+  return docs;
 };
 const getSimilarBooks = async (
   _: any,
-  { bookId }: { bookId: ObjectId },
+  { bookId }: { bookId: string },
   { user }: any
 ) => {
   requirePerms(user?.permsInt, Perm.VIEW_BOOKS);
 
-  const book = toDoc(
-    await Item.findOne({
-      tags: { $in: ["media"] },
-      _id: bookId,
-    })
-  );
-  if (!book) return [];
+  const docs = await itemController.getSimilarMedia(bookId);
 
-  const res = await Item.find({
-    tags: { $in: ["media"] },
-    "media.contentTags": { $in: book.media.contentTags },
-  });
-  return res.map(toDoc);
+  return docs;
 };
 export default {
   getShelf,

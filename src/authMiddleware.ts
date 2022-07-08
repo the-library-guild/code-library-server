@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import itemController from "./controllers/item.controller";
 
 import env from "./env";
 
@@ -21,13 +22,7 @@ const authMiddleware =
     setHeaders({ req, res });
 
     try {
-      let token: string;
-
-      const tokenFromHeader = req.headers.authorization;
-
-      if (tokenFromHeader) {
-        token = tokenFromHeader.replace("Bearer ", "");
-      }
+      const token = req.headers.authorization?.replace("Bearer ", "");
 
       const user: any = testUser || jwt.verify(token, env.JWT_SECRET);
 
