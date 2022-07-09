@@ -1,3 +1,4 @@
+import { RentableState } from "../data/rentable.settings";
 import Item from "../models/item.model";
 
 const getShelf = { tags: { $in: ["shelf"] } };
@@ -6,7 +7,7 @@ const getReturnBox = { tags: { $in: ["returnBox"] } };
 const bookData = {
   desc: "",
   rentable: {
-    stateTags: ["Available"],
+    stateTags: [RentableState.AVAILABLE],
   },
   tags: ["book", "rentable", "physical", "borrowable", "media"],
 };

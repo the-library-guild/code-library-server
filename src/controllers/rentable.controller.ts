@@ -1,6 +1,6 @@
-import { addDays } from "date-fns";
+import { addDays, addHours } from "date-fns";
 import { Err } from "../data/errors.settings";
-import { RentableState } from "../data/rentable.settings";
+import rentableSettings, { RentableState } from "../data/rentable.settings";
 import env from "../env";
 import Item from "../models/item.model";
 import User from "../models/user.model";
@@ -42,9 +42,9 @@ const rentableController = {
     );
     rentableDoc.rentable.currentOwner = userDoc._id;
     rentableDoc.rentable.rentedDate = Date.now();
-    rentableDoc.rentable.dueDate = addDays(
+    rentableDoc.rentable.dueDate = addHours(
       new Date(),
-      env.MAX_RENTING_DURATION_DAYS
+      rentableSettings.MAX_RENTING_DURATION_HOURS
     );
 
     userDoc.childrenIds = [...userDoc.childrenIds, rentableId];
@@ -52,7 +52,7 @@ const rentableController = {
     await rentableDoc.save();
     await userDoc.save();
 
-    console.info(`${rentableDoc.name} rented by ${email}`);
+    console.info(`[Server][${email}] rented "${rentableDoc.name}"`);
 
     return { ok: true, data: null };
   },
@@ -74,7 +74,7 @@ const rentableController = {
       };
     if (
       userDoc == null ||
-      (!env.ANYONE_CAN_RETURN_ANYONES_BOOKS &&
+      (!rentableSettings.ANYONE_CAN_RETURN_ANYONES_BOOKS &&
         !userDoc.childrenIds.includes(rentableId))
     )
       return { ok: false, msg: Err.Renting.USER_CANT_RETURN };
@@ -93,7 +93,7 @@ const rentableController = {
     await rentableDoc.save();
     await userDoc.save();
 
-    console.info(`${rentableDoc.name} returned by ${email}`);
+    console.info(`[Server][${email}] returned "${rentableDoc.name}"`);
 
     return { ok: true, data: null };
   },
@@ -118,8 +118,7 @@ const rentableController = {
       RentableState.PROCESSING,
       RentableState.AVAILABLE
     );
-
-    console.info(` ${rentableDoc.name} processed by ${email}`);
+    console.info(`[Server][${email}] processed "${rentableDoc.name}"`);
 
     return { ok: true, data: null };
   },

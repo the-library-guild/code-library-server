@@ -10,15 +10,17 @@ import resolvers from "./resolvers";
 import { migrateDb } from "./migrateDb";
 import authMiddleware from "./authMiddleware";
 import env from "./env";
+import rentableSettings from "./data/rentable.settings";
 
 const app = express();
 
 const testUser = {
   name: "Linus Bolls",
   email: "linus.bolls@code.berlin",
-  permsInt: 127,
-  rentingLimit: 10,
+  permsInt: rentableSettings.LIBRARIAN_PERMS_INT,
+  rentingLimit: rentableSettings.LIBRARIAN_BOOKING_LIMIT,
 };
+
 const corsOptions = {
   credentials: true,
   origin: env.ALLOWED_ORIGINS,

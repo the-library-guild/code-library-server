@@ -1,8 +1,12 @@
+import Item from "../models/item.model";
 import Qr from "../models/qr.model";
 import itemController from "./item.controller";
 
 const qrController = {
-  create: async (qrId: string, mediaId: string) => {
+  create: async (
+    qrId: string,
+    mediaId: string
+  ): Promise<typeof Item | null> => {
     const alreadyTakenQrCode = await qrController.get(qrId);
 
     if (alreadyTakenQrCode) return null;
@@ -11,15 +15,15 @@ const qrController = {
       qrId,
       mediaId,
     });
-    return doc?.toObject();
+    return doc?.toObject() ?? null;
   },
-  get: async (qrId: string) => {
+  get: async (qrId: string): Promise<typeof Item | null> => {
     const doc = await Qr.findOne({
       qrId,
     });
-    return doc?.toObject();
+    return doc?.toObject() ?? null;
   },
-  getLinkedItem: async (qrId: string) => {
+  getLinkedItem: async (qrId: string): Promise<typeof Item | null> => {
     const qrDoc = await Qr.findOne({
       qrId,
     });

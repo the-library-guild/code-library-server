@@ -12,6 +12,9 @@ const userProps = {
   childrenIds: { type: [String], default: [] },
   tags: { type: [String], default: [] },
   desc: { type: String, default: "" },
+
+  name: String,
+  email: { type: String, required: true },
 };
 const userSchema = new Schema(userProps, schemaOptions);
 

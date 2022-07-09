@@ -1,7 +1,7 @@
 import axios from "axios";
 
 import { Book, Container } from "./definitions/types";
-import { papaParse } from "./papaParse";
+import { papaParse } from "./services/papaParse";
 import userController from "./controllers/user.controller";
 import itemController from "./controllers/item.controller";
 

@@ -11,5 +11,6 @@ const Err = {
     CANT_BE_PROCESSED:
       "this item does not exist, is not rentable in general or is not processing right now",
   },
+  User: { CANT_FIND_USER: "failed to find user" },
 };
 export { Err };

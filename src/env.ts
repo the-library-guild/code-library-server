@@ -1,10 +1,10 @@
 import { config } from "dotenv";
 
 import { EnvZod } from "./definitions/zod";
-/*
-exports type parsed environment variables (i.e. PORT: "420" becomes PORT: 420) for linting and auto completion purposes.
-in staging and prod, these are sourced from process.env (injected via heroku), in development from the local .env file
-*/
+/**
+ * exports type parsed environment variables (i.e. PORT: "420" becomes PORT: 420) for linting and auto completion purposes.
+ * in staging and prod, these are sourced from process.env (injected via heroku), in development from the local .env file
+ */
 function getEnvSrc() {
   const { error, parsed } = config();
 
@@ -34,15 +34,6 @@ function parseEnv(env: { [key: string]: string }) {
 
     GOOGLE_ID: env.GOOGLE_ID,
     GOOGLE_SECRET: env.GOOGLE_SECRET,
-
-    MAX_SESSION_DURATION_SECONDS: parseInt(env.MAX_SESSION_DURATION_SECONDS),
-    DEFAULT_USER_BOOKING_LIMIT: parseInt(env.DEFAULT_USER_BOOKING_LIMIT),
-
-    // TODO: pull from env:
-    // ADMINS: JSON.parse(env.ADMIN_EMAILS ?? "[]"),
-    ADMIN_EMAILS: hardcodedAdmins,
-    ANYONE_CAN_RETURN_ANYONES_BOOKS: true,
-    MAX_RENTING_DURATION_DAYS: 14,
   };
 }
 function validateEnv(env: { [key: string]: any }) {
