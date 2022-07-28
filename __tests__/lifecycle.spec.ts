@@ -1,8 +1,9 @@
 import { connect, disconnect } from "mongoose";
-import itemController from "../src/controllers/item.controller";
+import mediaController from "../src/controllers/media.controller";
 import rentableController from "../src/controllers/rentable.controller";
 import userController from "../src/controllers/user.controller";
 import { Err } from "../src/data/errors.settings";
+import rentableSettings from "../src/data/rentable.settings";
 import env from "../src/env";
 import { migrateDb } from "../src/migrateDb";
 
@@ -16,7 +17,7 @@ describe("lifecycle", () => {
   let bookIds: string[];
 
   test("get books", async () => {
-    const books = await itemController.getBooks();
+    const books = await mediaController.getAll();
 
     bookIds = books.map((i) => i._id);
   });
@@ -82,6 +83,6 @@ describe("lifecycle", () => {
     }
     const successes = results.filter((i) => i.ok);
 
-    expect(successes.length).toEqual(env.DEFAULT_USER_BOOKING_LIMIT);
+    expect(successes.length).toEqual(rentableSettings.USER_BOOKING_LIMIT);
   });
 });

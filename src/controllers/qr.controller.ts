@@ -18,9 +18,8 @@ const qrController = {
     return doc?.toObject() ?? null;
   },
   get: async (qrId: string): Promise<typeof Item | null> => {
-    const doc = await Qr.findOne({
-      qrId,
-    });
+    const doc = await Qr.findOne({ qrId });
+
     return doc?.toObject() ?? null;
   },
   getLinkedItem: async (qrId: string): Promise<typeof Item | null> => {

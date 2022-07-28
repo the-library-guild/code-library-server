@@ -1,17 +1,16 @@
-import {
-  DEFAULT_USER_PERMS_INT,
-  LIBRARIAN_PERMS_INT,
-} from "code-library-perms";
+import { Err } from "../data/errors.settings";
 import rentableSettings from "../data/rentable.settings";
 
-import env from "../env";
 import User from "../models/user.model";
 
 const resolvePerms = (email: string) => {
   const isAdmin = rentableSettings.LIBRARIAN_EMAILS.includes(email);
 
   return {
-    permsInt: isAdmin ? LIBRARIAN_PERMS_INT : DEFAULT_USER_PERMS_INT,
+    permsInt: isAdmin
+      ? rentableSettings.LIBRARIAN_PERMS_INT
+      : rentableSettings.USER_PERMS_INT,
+
     rentingLimit: isAdmin
       ? rentableSettings.LIBRARIAN_BOOKING_LIMIT
       : rentableSettings.USER_BOOKING_LIMIT,
@@ -46,22 +45,28 @@ const userController = {
   getAll: async (): Promise<NullableUser[]> => {
     const docs = await User.find();
 
-    return docs.map((i) => i?.toObject());
+    return docs.map((i) => i.toObject());
   },
   getRenting: async (): Promise<NullableUser[]> => {
     const docs = await User.find({
       children: { $exists: true, $not: { $size: 0 } },
     });
 
-    return docs.map((i) => i?.toObject());
+    return docs.map((i) => i.toObject());
   },
 
   patch: async (email: string, userData: UserInput_NEEDS_TO_BE_FIXED) => {
-    const doc = await User.findOneAndUpdate({ email }, { userData });
+    const doc = await User.findOneAndUpdate(
+      { email },
+      { ...userData },
+      { new: true }
+    );
 
     console.info(`[Server][${email}] patched user ${JSON.stringify(userData)}`);
 
-    return { ok: doc != null, data: doc?.toObject() ?? null };
+    if (doc == null) return { ok: false, msg: Err.User.CANT_FIND_USER };
+
+    return { ok: true, data: doc?.toObject() ?? null };
   },
 
   delete: async (email: string) => {

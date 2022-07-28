@@ -1,9 +1,11 @@
 import axios from "axios";
 
-import { Book, Container } from "./definitions/types";
+import { Book } from "./definitions/types";
 import { papaParse } from "./services/papaParse";
 import userController from "./controllers/user.controller";
 import itemController from "./controllers/item.controller";
+import containerController from "./controllers/container.controller";
+import bookController from "./controllers/book.controller";
 
 function toBookObj(props: string[]) {
   const book: Book = {
@@ -25,28 +27,6 @@ function toBookObj(props: string[]) {
   };
   return book;
 }
-const shelf: Container = {
-  name: "CODE Library Book Shelf",
-  tags: ["shelf", "container", "physical"],
-  childrenIds: [],
-  desc: "Official CODE Library Book Shelf™ in Bikini Bottom, students can borrow books at https://library.code.berlin/",
-  physical: {
-    coords: null,
-    geometry: null,
-    texture: null,
-  },
-};
-const returnBox: Container = {
-  name: "CODE Library Return Box",
-  tags: ["returnBox", "container", "physical"],
-  childrenIds: [],
-  desc: "Official CODE Library Return Box™ in Bikini Bottom, students can borrow books at https://library.code.berlin/",
-  physical: {
-    coords: null,
-    geometry: null,
-    texture: null,
-  },
-};
 async function migrateDb() {
   await itemController.deleteAll();
   await userController.deleteAll();
@@ -56,7 +36,8 @@ async function migrateDb() {
     name: "Linus Bolls",
   });
 
-  await itemController.createMany([shelf, returnBox]);
+  await containerController.createShelf();
+  await containerController.createReturnBox();
 
   const URL =
     "https://docs.google.com/spreadsheets/d/e/2PACX-1vTJs4FKl_eqyLBaWA3WqiP88BbaVNl2rGl-wezGg_ARdinZfkeGG0ZuG-u0dK0vj5xsGJuQ_cQS_eXT/pub?gid=0&single=true&output=csv";
@@ -67,6 +48,6 @@ async function migrateDb() {
 
   const books = data.slice(1).map(toBookObj);
 
-  await itemController.createBooks(books);
+  await bookController.createMany(books);
 }
 export { migrateDb };

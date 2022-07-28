@@ -1,7 +1,6 @@
-import { addDays, addHours } from "date-fns";
+import { addHours } from "date-fns";
 import { Err } from "../data/errors.settings";
 import rentableSettings, { RentableState } from "../data/rentable.settings";
-import env from "../env";
 import Item from "../models/item.model";
 import User from "../models/user.model";
 

@@ -13,16 +13,6 @@ function getEnvSrc() {
   return parsed;
 }
 
-const hardcodedAdmins = [
-  "marcelo.teixeira@code.berlin",
-  "linus.bolls@code.berlin",
-
-  "alex.maurer@code.berlin",
-  "lida.masouleh@code.berlin",
-  "alexander.gerick@code.berlin",
-  "maya.alroy@code.berlin",
-];
-
 function parseEnv(env: { [key: string]: string }) {
   return {
     IS_PROD: env.NODE_ENV === "production",

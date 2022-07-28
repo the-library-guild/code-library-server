@@ -1,23 +1,10 @@
-import { RentableState } from "../data/rentable.settings";
 import Item from "../models/item.model";
-
-const getShelf = { tags: { $in: ["shelf"] } };
-const getReturnBox = { tags: { $in: ["returnBox"] } };
-
-const bookData = {
-  desc: "",
-  rentable: {
-    stateTags: [RentableState.AVAILABLE],
-  },
-  tags: ["book", "rentable", "physical", "borrowable", "media"],
-};
 
 const itemController = {
   createMany: async (data: any[], parentId: string = null) => {
     const docs = await Item.create(data.map((i) => ({ ...i, parentId })));
 
-    console.log("creating", parentId);
-    console.log(docs.length);
+    console.info(`[Server] creating ${data.length} items`);
 
     const docIds = docs.map((i) => i._id);
 
@@ -27,35 +14,15 @@ const itemController = {
         { $push: { childrenIds: { $each: docIds } } }
       );
 
-    return docs.map((i) => i?.toObject());
+    return docs.map((i) => i.toObject());
   },
   create: async (data: any) => {
     return await itemController.createMany([data]);
   },
-  createBooks: async (data: any[]) => {
-    const shelf = await itemController.getShelf();
-
-    const newData = data.map((i) => ({ ...i, ...bookData }));
-
-    return await itemController.createMany(newData, shelf._id);
-  },
-  createBook: async (data: any) => {
-    return await itemController.createBooks([data]);
-  },
-  getShelf: async () => {
-    const doc = await Item.findOne(getShelf);
-
-    return doc?.toObject();
-  },
-  getReturnBox: async () => {
-    const doc = await Item.findOne(getReturnBox);
-
-    return doc?.toObject();
-  },
-  get: async (_id: string) => {
+  get: async (_id: string): Promise<typeof Item | null> => {
     const doc = await Item.findOne({ _id });
 
-    return doc?.toObject();
+    return doc?.toObject() ?? null;
   },
   patch: async (_id: string, bookData: any) => {
     // TODO: make secure
@@ -64,43 +31,37 @@ const itemController = {
 
     return doc;
   },
-  delete: async (_id: string) => {
-    const doc = await Item.deleteOne({ _id });
-
-    return doc;
-  },
   getChildren: async (parent: any) => {
     const docs = await Item.find({ _id: { $in: parent.childrenIds } });
 
-    return docs.map((i) => i?.toObject());
+    return docs.map((i) => i.toObject());
   },
   getParent: async (child: any) => {
     if (child?.parentId == null) return null;
 
     const doc = await Item.findOne({ _id: child?.parentId });
 
-    return doc?.toObject();
+    return doc?.toObject() ?? null;
   },
-  getBooks: async () => {
-    const docs = await Item.find({ tags: { $in: ["media"] } });
+  delete: async (_id: string) => {
+    const doc = await Item.deleteOne({ _id });
 
-    return docs.map((i) => i?.toObject());
-  },
-  getSimilarMedia: async (id: string) => {
-    const media = await itemController.get(id);
-
-    if (!media) return [];
-
-    const doc = await Item.find({
-      tags: { $in: ["media"] },
-      "media.contentTags": { $in: media.media.contentTags },
-    });
-    return doc.map((i) => i?.toObject());
+    return doc;
   },
   deleteAll: async () => {
     return await Item.deleteMany({});
   },
+  getAllByTags: async (tags: string[] | string) => {
+    if (!Array.isArray(tags)) tags = [tags];
+
+    const docs = await Item.find({ tags: { $in: tags } });
+
+    return docs.map((i) => i.toObject());
+  },
+  getOneByTags: async (tags: string[] | string) => {
+    const items = await itemController.getAllByTags(tags);
+
+    return items.length ? items[0] : items;
+  },
 };
 export default itemController;
-
-// tags: { $in: ["media"] }

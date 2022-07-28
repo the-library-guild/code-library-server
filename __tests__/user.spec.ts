@@ -1,4 +1,7 @@
 import { connect, disconnect } from "mongoose";
+import bookController from "../src/controllers/book.controller";
+import mediaController from "../src/controllers/media.controller";
+import rentableController from "../src/controllers/rentable.controller";
 import userController from "../src/controllers/user.controller";
 import { Err } from "../src/data/errors.settings";
 import rentableSettings from "../src/data/rentable.settings";
@@ -21,8 +24,8 @@ describe("user", () => {
 
       expect(rest).toEqual({
         email: "marcelo.teixeira@code.berlin",
-        permsInt: rentableSettings.USER_PERMS_INT,
-        rentingLimit: rentableSettings.USER_BOOKING_LIMIT,
+        permsInt: rentableSettings.LIBRARIAN_PERMS_INT,
+        rentingLimit: rentableSettings.LIBRARIAN_BOOKING_LIMIT,
         childrenIds: [],
         tags: [],
         desc: "",
@@ -74,8 +77,26 @@ describe("user", () => {
         });
       });
       describe("getRenting", () => {
-        test("it works", async () => {
+        test("it works if no one is renting", async () => {
           const users = await userController.getRenting();
+          expect(users?.length).toEqual(0);
+        });
+        test("it works when someone is renting", async () => {
+          const books = await mediaController.getAll();
+
+          await rentableController.rent(
+            "mark.soeder@code.berlin",
+            books[0]._id
+          );
+
+          const users = await userController.getRenting();
+
+          expect(users?.length).toEqual(1);
+
+          await rentableController.return(
+            "mark.soeder@code.berlin",
+            books[0]._id
+          );
           expect(users?.length).toEqual(0);
         });
       });
@@ -88,25 +109,21 @@ describe("user", () => {
         const { _id, createdDate, updatedDate, __v, ...rest } = res.data as any;
 
         expect(rest).toEqual({
-          ok: true,
-          data: {
-            email: "mark.soeder@code.berlin",
-            permsInt: rentableSettings.USER_PERMS_INT,
-            rentingLimit: rentableSettings.USER_BOOKING_LIMIT,
-            childrenIds: [],
-            tags: [],
-            desc: "",
-            name: "markus",
-          },
+          email: "mark.soeder@code.berlin",
+          permsInt: rentableSettings.USER_PERMS_INT,
+          rentingLimit: rentableSettings.USER_BOOKING_LIMIT,
+          childrenIds: [],
+          tags: [],
+          desc: "",
+          name: "markus",
         });
       });
       it("fails on unknown users", async () => {
         const res = await userController.patch("nonexistent.user@code.berlin", {
           name: "markus",
         });
-        const { _id, createdDate, updatedDate, __v, ...rest } = res.data as any;
 
-        expect(rest).toEqual({
+        expect(res).toEqual({
           ok: false,
           msg: Err.User.CANT_FIND_USER,
         });
