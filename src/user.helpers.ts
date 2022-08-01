@@ -16,9 +16,9 @@ export type UserInfo = {
 const ADMINS = ["marcelo.teixeira@code.berlin", "linus.bolls@code.berlin"];
 
 const resolveDefaultPermissions = (email: string) => {
-  console.log("checking email", email);
   if (ADMINS.includes(email)) {
-    return LIBRARIAN_PERMS_INT;
+    // return LIBRARIAN_PERMS_INT;
+    return DEFAULT_USER_PERMS_INT;
   }
 
   return DEFAULT_USER_PERMS_INT;
